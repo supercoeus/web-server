@@ -25,7 +25,7 @@ class BaseDSL(object):
 class SingleMonitorDataDSL(BaseDSL):
 
     def __init__(self, params):
-        super().__init__()
+        super(SingleMonitorDataDSL, self).__init__(params)
         self._start = params.get('_start')
         self._end = params.get('_end')
         self.category = params.get('category')

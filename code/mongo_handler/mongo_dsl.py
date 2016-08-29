@@ -16,7 +16,7 @@ class BaseDSL(object):
 
     def __init__(self, params):
         self.params = params
-    
+
     def get_base_filter(self):
 
         return None

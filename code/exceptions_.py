@@ -24,6 +24,7 @@ class ParamsException(BaseDFException):
     HTTP status_code = 400
     """
     ERROR_CODE = 1000
+    HTTP_STATUS_CODE = 400
 
 
 class MongodbQueryException(BaseDFException):
@@ -32,4 +33,5 @@ class MongodbQueryException(BaseDFException):
     HTTP status_code = 500
     """
     ERROR_CODE = 1001
+    HTTP_STATUS_CODE = 500
 

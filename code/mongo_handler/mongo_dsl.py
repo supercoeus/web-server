@@ -11,15 +11,48 @@ Description:
 Changelog:
 """
 
+import code.const as const
+import datetime
+import code.utils as utils
+import code.logger as logger
+
+
+mongo_dsl_logger = logger.get_logger('mongo_dsl')
+
 
 class BaseDSL(object):
 
     def __init__(self, params):
         self.params = params
 
-    def get_base_filter(self):
+    @staticmethod
+    def get_base_match(_start, _end):
+        return {
+            "timestamp": {
+                "$gte": datetime.datetime.utcfromtimestamp(_start),
+                "$lte": datetime.datetime.utcfromtimestamp(_end)
+            }
+        }
 
-        return None
+    @staticmethod
+    def get_group_id(division):
+        return {
+            "$subtract": [
+                {
+                    "$subtract": ["$timestamp", datetime.datetime(1970, 1, 1)]
+                },
+                {
+                    "$mod": [
+                        {
+                            "$subtract": [
+                                "$timestamp", datetime.datetime(1970, 1, 1)
+                            ]
+                        },
+                        division * 1000
+                    ]
+                }
+            ]
+        }
 
 
 class SingleMonitorDataDSL(BaseDSL):
@@ -29,10 +62,47 @@ class SingleMonitorDataDSL(BaseDSL):
         self._start = params.get('_start')
         self._end = params.get('_end')
         self.category = params.get('category')
+        self.type_ = params.get('type')
+
+    def get_avg_dsl(self):
+        result = []
+        if self.category == 'all':
+            categories = const.CATEGORIES.get(self.type_)
+            for item in categories:
+                result.append({
+                    item: {
+                        "$avg": '$' + item
+                    }
+                })
+        return result
 
     def gen_dsl(self):
-
-        return {}
+        division = utils.get_division(self._start, self._end)
+        group_ = {
+            '_id': self.get_group_id(division)
+        }
+        if self.category == 'all':
+            for avg_item in self.get_avg_dsl():
+                group_.update(avg_item)
+        else:
+            group_.update({
+                self.category: {
+                    '$avg': '$' + self.category
+                }
+            })
+        pipe_line = [
+            {
+                '$match': self.get_base_match(self._start, self._end)
+            },
+            {
+                '$group': group_
+            },
+            {
+                '$sort': {"_id": 1}
+            }
+        ]
+        mongo_dsl_logger.info("[mongo dsl result]: %s" % str(pipe_line))
+        return pipe_line
 
 
 class CmpMonitorDataDSL(object):

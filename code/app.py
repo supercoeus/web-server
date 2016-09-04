@@ -11,25 +11,29 @@ Description:
 Changelog:
 """
 
-from flask import Blueprint, request, make_response
+from flask import Blueprint, request, make_response, jsonify
 import exceptions_
 import logger as lg
 import adapter
+import const
 
 logger = lg.get_logger('web-api')
 
 
-cpu = Blueprint("cpu", __name__)
-memory = Blueprint('memory', __name__)
-load = Blueprint('load', __name__)
-cpu_s = Blueprint("cpu_s", __name__)
-memory_s = Blueprint('memory_s', __name__)
-load_s = Blueprint('load_s', __name__)
+# cpu = Blueprint("cpu", __name__)
+# memory = Blueprint('memory', __name__)
+# load = Blueprint('load', __name__)
+# cpu_s = Blueprint("cpu_s", __name__)
+# memory_s = Blueprint('memory_s', __name__)
+# load_s = Blueprint('load_s', __name__)
+
+machine = Blueprint("machine", __name__)
+machines = Blueprint('machines', __name__)
 
 mongo_adapter = adapter.MongoAdapter()
 
 
-def check_request_args_single(args, ip):
+def check_request_args_single(args, ip, type_):
     _start = args.get('_start', type=int)
     _end = args.get('_end', type=int)
     category = args.get('category', default='all')
@@ -37,27 +41,50 @@ def check_request_args_single(args, ip):
         raise exceptions_.ParamsException("_start should not be none")
     if not _end:
         raise exceptions_.ParamsException("_end should not be none")
-    return {
+    if _start >= _end:
+        raise exceptions_.ParamsException("_end time should be larger "
+                                          "than _start")
+    if category != 'all' and category not in const.CATEGORIES.get(type_):
+        raise exceptions_.ParamsException('category is wrong')
+    params = {
         '_start': _start,
         '_end': _end,
         'category': category,
-        'ip': ip
+        'ip': ip,
+        'type': type_
     }
+    logger.info('[parse params]: %s' % str(params))
+    return params
 
 
-@cpu.route("/<ip>/cpu")
-def cpu_info(ip):
+@machine.route('/')
+def test():
+    return "test"
+
+
+@machine.route("/<ip>/<type_>")
+def cpu_info(ip, type_):
     args = request.args
     try:
-        params = check_request_args_single(args, ip)
-
+        if type_ not in ('cpu', 'load', 'memory'):
+            msg = {
+                'status_code': 404,
+                'error_code': 1002,
+                'msg': '[%s] is not exist' % type_
+            }
+            logger.error(msg)
+            return make_response(jsonify(msg), 404)
+        params = check_request_args_single(args, ip, type_)
+        result = mongo_adapter.get_single_data(params)
+        return jsonify(result)
     except exceptions_.BaseDFException as e:
         msg = {
-            'status_code': 400,
+            'status_code': e.HTTP_STATUS_CODE,
             'error_code': e.ERROR_CODE,
             'msg': e.msg
         }
         logger.error(msg)
+        return make_response(jsonify(msg), e.HTTP_STATUS_CODE)
 
 
 

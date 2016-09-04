@@ -29,6 +29,12 @@ def __set_from_environ():
 FLASK_HOST = '0.0.0.0'
 FLASK_PORT = '9999'
 
+MONGODB_HOST = '127.0.0.1'
+MONGODB_PORT = 27017
+MONGODB_DB = 'mongo'
+MONGODB_USER = 'mongo'
+MONGODB_PASSWD = 'mongo'
+MONGODB_COLS = ('cpu', 'load', 'memory')
 
 
 

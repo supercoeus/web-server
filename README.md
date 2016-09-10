@@ -19,3 +19,18 @@ HTTP状态码 |  说明
 ---|---|---
 1000 | 400 | 查询参数错误
 1001 | 500 | mongodb查询失败
+
+
+## 使用容器
+### 制作镜像
+
+```
+docker build -t web-server .
+```
+
+### 启动镜像
+
+```
+docker-compose -p web-server -f docker-compose.yml up -d
+```
+

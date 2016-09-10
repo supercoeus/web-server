@@ -27,7 +27,7 @@ def __set_from_environ():
             d[k] = v
 
 FLASK_HOST = '0.0.0.0'
-FLASK_PORT = '9999'
+FLASK_PORT = 9999
 
 MONGODB_HOST = '127.0.0.1'
 MONGODB_PORT = 27017
@@ -37,5 +37,5 @@ MONGODB_PASSWD = 'mongo'
 MONGODB_COLS = ('cpu', 'load', 'memory')
 
 
-
 __set_from_environ()
+

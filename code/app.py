@@ -33,10 +33,9 @@ machines = Blueprint('machines', __name__)
 mongo_adapter = adapter.MongoAdapter()
 
 
-def check_request_args_single(args, ip, type_):
+def check_request_args(args, type_, ip=None, single=True):
     _start = args.get('_start', type=int)
     _end = args.get('_end', type=int)
-    category = args.get('category', default='all')
     if not _start:
         raise exceptions_.ParamsException("_start should not be none")
     if not _end:
@@ -44,15 +43,31 @@ def check_request_args_single(args, ip, type_):
     if _start >= _end:
         raise exceptions_.ParamsException("_end time should be larger "
                                           "than _start")
-    if category != 'all' and category not in const.CATEGORIES.get(type_):
-        raise exceptions_.ParamsException('category is wrong')
-    params = {
-        '_start': _start,
-        '_end': _end,
-        'category': category,
-        'ip': ip,
-        'type': type_
-    }
+    if single:
+        category = args.get('category', default='all')
+        if category != 'all' and category not in const.CATEGORIES.get(type_):
+            raise exceptions_.ParamsException('category is wrong')
+        params = {
+            '_start': _start,
+            '_end': _end,
+            'category': category,
+            'ip': ip,
+            'type': type_
+        }
+    else:
+        category = args.get('category')
+        if not category or category not in const.CATEGORIES.get(type_):
+            raise exceptions_.ParamsException('category is wrong')
+        iplist = args.getlist('ip[]')
+        if not iplist:
+            raise exceptions_.ParamsException('ip list is None')
+        params = {
+            '_start': _start,
+            '_end': _end,
+            'category': category,
+            'iplist': iplist,
+            'type': type_
+        }
     logger.info('[parse params]: %s' % str(params))
     return params
 
@@ -62,19 +77,19 @@ def test():
     return "test"
 
 
-@machine.route("/<ip>/<type_>")
-def cpu_info(ip, type_):
+@machine.route("/machine/<ip>/<type_>")
+def single_machine_info(ip, type_):
     args = request.args
+    if type_ not in ('cpu', 'load', 'memory'):
+        msg = {
+            'status_code': 404,
+            'error_code': 1002,
+            'msg': '[%s] is not exist' % type_
+        }
+        logger.error(msg)
+        return make_response(jsonify(msg), 404)
     try:
-        if type_ not in ('cpu', 'load', 'memory'):
-            msg = {
-                'status_code': 404,
-                'error_code': 1002,
-                'msg': '[%s] is not exist' % type_
-            }
-            logger.error(msg)
-            return make_response(jsonify(msg), 404)
-        params = check_request_args_single(args, ip, type_)
+        params = check_request_args(args, type_, ip, single=True)
         result = mongo_adapter.get_single_data(params)
         return jsonify(result)
     except exceptions_.BaseDFException as e:
@@ -85,6 +100,32 @@ def cpu_info(ip, type_):
         }
         logger.error(msg)
         return make_response(jsonify(msg), e.HTTP_STATUS_CODE)
+
+
+@machines.route("/machines/<type_>")
+def machines_info(type_):
+    args = request.args
+    if type_ not in ('cpu', 'load', 'memory'):
+        msg = {
+            'status_code': 404,
+            'error_code': 1002,
+            'msg': '[%s] is not exist' % type_
+        }
+        logger.error(msg)
+        return make_response(jsonify(msg), 404)
+    try:
+        params = check_request_args(args, type_, ip=None, single=False)
+        result = mongo_adapter.get_cmp_data(params)
+        return jsonify(result)
+    except exceptions_.BaseDFException as e:
+        msg = {
+            'status_code': e.HTTP_STATUS_CODE,
+            'error_code': e.ERROR_CODE,
+            'msg': e.msg
+        }
+        logger.error(msg)
+        return make_response(jsonify(msg), e.HTTP_STATUS_CODE)
+
 
 
 

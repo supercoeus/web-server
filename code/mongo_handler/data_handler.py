@@ -12,9 +12,6 @@ Changelog:
 """
 
 from basehandler import BaseHandler
-from mongo_db import MongoInstance
-from code.exceptions_ import MongodbQueryException
-import code.const as const
 import code.utils as utils
 import code.logger as logger
 
@@ -23,26 +20,8 @@ data_logger = logger.get_logger('data')
 
 
 class DataHandler(BaseHandler):
-
-    def __init__(self, dsl, params):
-        self.dsl = dsl
-        self.params = params
-
-    def get_mongo_col(self):
-        try:
-            mongo_ins = MongoInstance()
-            db = mongo_ins.get_database()
-            col = mongo_ins.get_col(db, col=self.params.get('type'))
-            data_logger.info('[mongo dsl name]: %s' % col.name)
-            return col
-        except Exception as e:
-            data_logger.error('get mongo db collection error: %s' % str(e))
-            raise MongodbQueryException('get mongodb collection'
-                                        ' error: [%s]' % str(e))
-
-    def get_query_result(self):
-        """
-        返回数据格式为:
+    """
+    查询mongodb返回数据格式为:
         [
           {
             u'_id': 1472982000000L,
@@ -60,16 +39,12 @@ class DataHandler(BaseHandler):
             u'w5_avg': 0.516949152542373
           }
         ]
-        :return:
-        """
-        col = self.get_mongo_col()
-        try:
-            raw_result = list(col.aggregate(self.dsl))
-            data_logger.info('mongo raw_result: %s' % str(raw_result))
-            return raw_result
-        except Exception as e:
-            data_logger.error('query mongo error: %s' % str(e))
-            raise MongodbQueryException('query mongodb error: [%s]' % str(e))
+    """
+
+    def __init__(self, dsl, params):
+        super(DataHandler, self).__init__(params)
+        self.dsl = dsl
+        self.params = params
 
     def add_data_when_none(self, data):
         """
@@ -138,22 +113,19 @@ class DataHandler(BaseHandler):
         返回最终给前端使用的数据
         :return:
         """
-        raw_result = self.get_query_result()
+        raw_result = self.get_query_result(self.dsl)
         result = {
             "categories": [],
             "series": []
         }
         if raw_result:
             add_none_data = self.add_data_when_none(raw_result)
-            hanled_data = self.timestamp2str(add_none_data)
-            data_logger.info('[handled data]: %s' % str(hanled_data))
-            result = self.format_data(hanled_data)
+            result = self.format_data(add_none_data)
             data_logger.info('[final data to web]: %s' % str(result))
 
         return result
 
-    @staticmethod
-    def format_data(data):
+    def format_data(self, data):
         """
         格式化数据形式，将数据组织成前端需要的形式:
         {
@@ -193,6 +165,7 @@ class DataHandler(BaseHandler):
                 'data': temp.get(name)
             }
             series.append(item)
+        categories = self.timestamp2str(categories)
         return {
             "categories": categories,
             "series": series

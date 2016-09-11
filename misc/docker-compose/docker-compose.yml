@@ -1,5 +1,5 @@
 web-server:
-  image:
+  image: web-server:latest
   environment:
     - MONGODB_HOST=mongodb
   external_links:

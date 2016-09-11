@@ -29,6 +29,9 @@ class MongoAdapter(object):
     @staticmethod
     def get_cmp_data(params):
         dsl = mongo_dsl.CmpMonitorDataDSL(params)
-        result = ''
+        del_expression = dsl.gen_dsl()
+        cmp_handler = cmp_data_handler.DataHandler(
+            dsl=del_expression, params=params)
+        result = cmp_handler.get_data()
         return result
 

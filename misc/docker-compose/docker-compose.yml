@@ -7,6 +7,6 @@ web-server:
   ports:  # 这里做一下映射方便调试，其实是没有必要做映射的
     - 9999:9999
   volumes:
-    - /home/taohao/codes/sadev-traning/web-server/code:/home/taohao/running/web-server/code
-    - /home/taohao/codes/sadev-traning/web-server/conf:/home/taohao/running/conf
+    - /home/taohao/codes/sadev-training/web-server/code:/home/taohao/running/web-server/code
+    - /home/taohao/codes/sadev-training/web-server/conf:/home/taohao/running/conf
 

@@ -29,6 +29,7 @@ logger = lg.get_logger('web-api')
 
 machine = Blueprint("machine", __name__)
 machines = Blueprint('machines', __name__)
+iplist = Blueprint('iplist', __name__)
 
 mongo_adapter = adapter.MongoAdapter()
 
@@ -127,6 +128,19 @@ def machines_info(type_):
         return make_response(jsonify(msg), e.HTTP_STATUS_CODE)
 
 
+@iplist.route("/ips")
+def get_iplist():
+    try:
+        result = mongo_adapter.get_iplist()
+        return jsonify(result)
+    except exceptions_.BaseDFException as e:
+        msg = {
+            'status_code': e.HTTP_STATUS_CODE,
+            'error_code': e.ERROR_CODE,
+            'msg': e.msg
+        }
+        logger.error(msg)
+        return make_response(jsonify(msg), e.HTTP_STATUS_CODE)
 
 
 

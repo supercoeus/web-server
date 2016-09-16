@@ -54,6 +54,9 @@ class BaseDSL(object):
             ]
         }
 
+    def gen_dsl(self):
+        pass
+
 
 class SingleMonitorDataDSL(BaseDSL):
 
@@ -161,5 +164,17 @@ class CmpMonitorDataDSL(BaseDSL):
         mongo_dsl_logger.info("[mongo dsl result]: %s" % str(pipe_line))
         return pipe_line
 
+
+class IpListDSL(object):
+
+    @staticmethod
+    def gen_dsl():
+        return [
+            {
+                "$group": {
+                    "_id": "$ip"
+                }
+            }
+        ]
 
 

@@ -17,14 +17,14 @@ Changelog:
 # 6小时，21600s：按6分钟获取
 # 1天，86400s：按半小时获取
 # 7天，604800s：按1小时获取
-# 15天，129600s：按6小时获取
+# 15天，1296000s：按6小时获取
 TIME_DIVISION = {
-    'five_minutes': (300, 0),
+    'five_minutes': (300, 10),
     "one_hour": (3600, 60),
     "six_hours": (21600, 360),
     "one_day": (86400, 1800),
     "seven_days": (604800, 3600),
-    "fifty_days": (129600, 21600)
+    "fifty_days": (1296000, 21600)
 }
 
 TIME_FORMAT = "%Y-%m-%d %H:%M:%S"

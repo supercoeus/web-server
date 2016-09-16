@@ -13,7 +13,7 @@ Changelog:
 from flask import Flask, make_response, jsonify
 # from app import cpu, cpu_s, memory, memory_s, load, load_s
 import config
-from app import machine, machines
+from app import machine, machines, iplist
 import logger
 
 main_logger = logger.get_logger('main')
@@ -26,6 +26,7 @@ def register_site(app):
     # app.register_blueprint(cpu_s, url_prefix='/api/v1/machines')
     app.register_blueprint(machines, url_prefix='/api/v1')
     # app.register_blueprint(load_s, url_prefix='/api/v1/machines')
+    app.register_blueprint(iplist, url_prefix='/api/v1')
 
 
 def main():

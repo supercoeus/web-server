@@ -172,4 +172,39 @@ class DataHandler(BaseHandler):
         }
 
 
+class IpListHandler(BaseHandler):
 
+    def __init__(self, dsl, params):
+        super(IpListHandler, self).__init__(params)
+        self.dsl = dsl
+
+    def get_data(self):
+        result = []
+        raw_result = self.get_query_result(self.dsl)
+        if raw_result:
+            result = self.format_data(data=raw_result)
+        return result
+
+    @staticmethod
+    def format_data(data):
+        """
+        mongodb返回的结果形式：
+        [
+          {
+            "_id": "172.17.0.8"
+          },
+          {
+            "_id": "172.17.0.10"
+          }
+        ]
+        格式化后返回的形式：
+        [
+            "172.17.0.8", "172.17.0.10"
+        ]
+        :param data:
+        :return:
+        """
+        iplist = []
+        for item in data:
+            iplist.append(item.get('_id'))
+        return iplist

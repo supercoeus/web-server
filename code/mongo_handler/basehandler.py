@@ -53,3 +53,7 @@ class BaseHandler(object):
             bh_logger.error('query mongo error: %s' % str(e), exc_info=True)
             raise MongodbQueryException('query mongodb error: [%s]' % str(e))
 
+    def get_data(self):
+        pass
+
+

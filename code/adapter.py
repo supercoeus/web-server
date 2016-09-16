@@ -35,3 +35,16 @@ class MongoAdapter(object):
         result = cmp_handler.get_data()
         return result
 
+    @staticmethod
+    def get_iplist():
+        params = {
+            "type": "load"
+        }
+        dsl_expression = mongo_dsl.IpListDSL.gen_dsl()
+        iplist_handler = data_handler.IpListHandler(
+            dsl=dsl_expression, params=params
+        )
+        result = iplist_handler.get_data()
+        return result
+
+

@@ -5,6 +5,7 @@ __pycache__/
 
 # pycharm
 .idea
+tttest.py
 
 # C extensions
 *.so

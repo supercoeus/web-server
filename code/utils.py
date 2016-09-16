@@ -37,7 +37,7 @@ def get_division(_start, _end):
         "six_hours": (21600, 360),
         "one_day": (86400, 1800),
         "seven_days": (604800, 3600),
-        "fifty_days": (129600, 21600)
+        "fifty_days": (1296000, 21600)
     }
     :param _start:
     :param _end:

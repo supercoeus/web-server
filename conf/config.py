@@ -25,6 +25,7 @@ def __set_from_environ():
             elif v == 'True':
                 v = True
             d[k] = v
+    d['MONGODB_PORT'] = int(d['MONGODB_PORT'])
 
 FLASK_HOST = '0.0.0.0'
 FLASK_PORT = 9999

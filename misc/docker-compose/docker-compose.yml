@@ -2,6 +2,7 @@ web-server:
   image: web-server:latest
   environment:
     - MONGODB_HOST=mongodb
+    - MONGODB_PORT=27017
   external_links:
     - mongodb_mongo_1:mongodb
   ports:  # 这里做一下映射方便调试，其实是没有必要做映射的

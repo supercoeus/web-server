@@ -6,7 +6,7 @@ Author:     Tao Hao
 @version:   
 Created time:   8/28/16
 
-Description:
+Description: 多机对比数据的处理类，从mongodb中获取数据后对数据进行处理
 
 Changelog:
 """

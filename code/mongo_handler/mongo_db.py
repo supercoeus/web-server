@@ -6,7 +6,7 @@ Author:     Tao Hao
 @version:   
 Created time:   9/4/16
 
-Description:
+Description: 处理mongodb的连接
 
 Changelog:
 """

@@ -6,7 +6,7 @@ Author:     Tao Hao
 @version:   
 Created time:   8/28/16
 
-Description:
+Description: 根据不同情况生成不同的mongodb查询语句
 
 Changelog:
 """

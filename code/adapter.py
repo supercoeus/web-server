@@ -6,7 +6,8 @@ Author:     Tao Hao
 @version:   
 Created time:   8/28/16
 
-Description:
+Description: 这是将请求和数据处理联系起来的部分。adapter获取mongodb的查询语句，
+再通过查询语句调用其他类的方法得到前端最终要的结果，再返回给请求处理部分。
 
 Changelog:
 """

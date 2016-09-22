@@ -6,9 +6,8 @@ Author:     Tao Hao
 @version:   
 Created time:   9/4/16
 
-Description:
+Description: 基础数据处理类，需要被继承
 
-Changelog:
 """
 import code.utils as utils
 from mongo_db import MongoInstance

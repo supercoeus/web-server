@@ -6,7 +6,7 @@ Author:     Tao Hao
 @version:   
 Created time:   8/28/16
 
-Description:
+Description: 单机机器的处理类，从mongodb获取数据，再进行处理
 
 Changelog:
 """

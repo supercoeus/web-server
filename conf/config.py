@@ -28,7 +28,7 @@ def __set_from_environ():
     d['MONGODB_PORT'] = int(d['MONGODB_PORT'])
 
 FLASK_HOST = '0.0.0.0'
-FLASK_PORT = 9999
+FLASK_PORT = 9991
 
 MONGODB_HOST = '172.17.0.2'
 MONGODB_PORT = 27017

@@ -16,6 +16,8 @@ from werkzeug.datastructures import MultiDict
 from code import exceptions_
 import json
 import requests
+import urllib
+
 
 HOST = 'http://172.17.0.6:9999/api/v1'
 
@@ -121,36 +123,50 @@ def test_check_request_args(args, types, ip, single, flag):
     ('/machines/', 'memory'),
     ('/machines/', 'test'),
 ])
-def test_machine_info(url, url_type):
-    api = HOST + url + url_type
-    params = {
-         '_start': 1474104368,
-         '_end': 1474114008,
-    }
-    if url_type == 'test':
-        params.update({'category': 'user'})
-        res = requests.get(api, params=params)
-        assert res.status_code == 404
-        assert '"error_code": 1002' in res.text
-    else:
-        if url == '/machines/':
-            api += '?ip[]=1.1.1.1&ip[]=2.2.2.2'
-        for category in const.CATEGORIES.get(url_type) + ('test',):
-            params.update({
-                'category': category
-            })
-            res = requests.get(api, params=params)
-            if category == 'test':
-                assert res.status_code == 400
-                assert '"error_code": 1000' in res.text
-            else:
-                assert res.status_code == 200
+def test_machine_info(app, url, url_type):
+    api = '/api/v1' + url + url_type
+    with app.test_client() as client:
+        params = {
+             '_start': 1474104368,
+             '_end': 1474114008,
+        }
+        if url_type == 'test':
+            params.update({'category': 'user'})
+            # res = requests.get(api, params=params)
+            res = client.get(api, query_string=urllib.urlencode(params))
+            assert res.status_code == 404
+            assert '"error_code": 1002' in res.data
+        else:
+            query_string = urllib.urlencode(params)
+            if url == '/machines/':
+                query_string += '&ip[]=1.1.1.1&ip[]=2.2.2.2'
+            categories = const.CATEGORIES.get(url_type) + ('test',)
+            for category in categories:
+                # params.update({
+                #     'category': category
+                # })
+                res = client.get(api, query_string=query_string + '&category=%s' % category)
+                if category == 'test':
+                    assert res.status_code == 400
+                    assert '"error_code": 1000' in res.data
+                else:
+                    assert res.status_code == 200
 
 
-def test_get_iplist():
-    api = HOST + '/ips'
-    res = requests.get(api)
-    assert res.status_code == 200
+def test_get_iplist(app):
+    api = '/api/v1' + '/ips'
+    with app.test_client() as client:
+        res = client.get(api)
+        assert res.status_code == 200
+
+
+def test_test(app):
+    api = '/api/v1/'
+    with app.test_client() as client:
+        res = client.get(api)
+        assert res.status_code == 200
+
+
 
 
 

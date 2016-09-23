@@ -19,7 +19,7 @@ from code.const import TIME_DIVISION
 
 def timestamp2str(timestamp, full=False):
     """
-    将时间戳转换成字符串
+    将时间戳转换成字符串   "2016-09-23 14:34:12"
     :param timestamp:
     :param full: 若为True则表示是13位时间戳，则要除以1000再进行转换
     :return:
@@ -32,7 +32,7 @@ def timestamp2str(timestamp, full=False):
 def get_division(_start, _end):
     """
     TIME_DIVISION = {
-        'five_minutes': (300, 0),
+        'five_minutes': (300, 10),
         "one_hour": (3600, 60),
         "six_hours": (21600, 360),
         "one_day": (86400, 1800),

@@ -48,50 +48,50 @@ class MongoInstance(object):
             raise exceptions_.MongodbQueryException(str(e))
 
 
-if __name__ == '__main__':
-    import datetime
-    import json
-    mongo_ins = MongoInstance()
-    db = mongo_ins.get_database()
-    col = mongo_ins.get_col(db, 'load')
-    pipe_line = [
-        {'$match': {
-            'timestamp': {
-                '$lte': datetime.datetime(2016, 9, 11, 6, 20),
-                '$gte': datetime.datetime(2016, 9, 11, 6, 0)
-            }
-        }},
-        {
-            '$group': {
-                '_id': {
-                    "ip": "$ip",
-                    "timestamp": {
-                        '$subtract': [
-                            {'$subtract': ['$timestamp',
-                                           datetime.datetime(1970, 1, 1, 0,
-                                                             0)]},
-                            {'$mod': [
-                                {'$subtract': ['$timestamp',
-                                               datetime.datetime(1970, 1, 1, 0,
-                                                                 0)]},
-                                360000]}
-                        ]
-                    }
-                },
-                'w1_avg': {'$avg': '$w1_avg'}
-            },
-        },
-        {
-            "$group": {
-                "_id": "$_id.ip",
-                "data": {
-                    "$push": {
-                        "timestamp": "$_id.timestamp",
-                        "w1_avg": "$w1_avg",
-                    }
-                }
-            }
-        },
-    ]
-    result = list(col.aggregate(pipeline=pipe_line))
-    print json.dumps(result)
+# if __name__ == '__main__':
+#     import datetime
+#     import json
+#     mongo_ins = MongoInstance()
+#     db = mongo_ins.get_database()
+#     col = mongo_ins.get_col(db, 'load')
+#     pipe_line = [
+#         {'$match': {
+#             'timestamp': {
+#                 '$lte': datetime.datetime(2016, 9, 11, 6, 20),
+#                 '$gte': datetime.datetime(2016, 9, 11, 6, 0)
+#             }
+#         }},
+#         {
+#             '$group': {
+#                 '_id': {
+#                     "ip": "$ip",
+#                     "timestamp": {
+#                         '$subtract': [
+#                             {'$subtract': ['$timestamp',
+#                                            datetime.datetime(1970, 1, 1, 0,
+#                                                              0)]},
+#                             {'$mod': [
+#                                 {'$subtract': ['$timestamp',
+#                                                datetime.datetime(1970, 1, 1, 0,
+#                                                                  0)]},
+#                                 360000]}
+#                         ]
+#                     }
+#                 },
+#                 'w1_avg': {'$avg': '$w1_avg'}
+#             },
+#         },
+#         {
+#             "$group": {
+#                 "_id": "$_id.ip",
+#                 "data": {
+#                     "$push": {
+#                         "timestamp": "$_id.timestamp",
+#                         "w1_avg": "$w1_avg",
+#                     }
+#                 }
+#             }
+#         },
+#     ]
+#     result = list(col.aggregate(pipeline=pipe_line))
+#     print json.dumps(result)
